@@ -32,9 +32,6 @@ public class SimpleTransformer implements ClassFileTransformer {
     private static List<String> preLoadClassList = new ArrayList<String>();
 
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-
-
-
         String newClassName = className.replace("/",".");
         ClassPool classPool = ClassPool.getDefault();
         String classPath = loader.getResource("").getPath();
@@ -91,14 +88,13 @@ public class SimpleTransformer implements ClassFileTransformer {
                 messageBody.append("filterRule.setObjectParamsMap(objectParamsMap);");
                 messageBody.append("com.itpuber.filter.Filter filter = com.itpuber.filter.FilterCache.getFilterInstance(filterRule);");
                 messageBody.append("boolean result = filter.invoke(filterRule, $args);");
-                messageBody.append("if (result) { ");
+                messageBody.append("if (!result) { ");
                 messageBody.append(buildReturnStatement(filterKey, ctMethod, failResult));
                 messageBody.append("}");
                 ctMethod.insertBefore(messageBody.toString());
             }
 
             return ctClass.toBytecode();
-
         } catch (NotFoundException e) {
             e.printStackTrace();
         } catch (CannotCompileException e) {
@@ -147,8 +143,8 @@ public class SimpleTransformer implements ClassFileTransformer {
         Object[][] annotations = ctMethod.getParameterAnnotations();
         for (int i = 0; i < annotations.length; i++) {
             for (int j = 0; j < annotations[i].length; j++) {
-                Object annotion = annotations[i][j];
-                if (annotion instanceof TargetParam
+                Object annotation = annotations[i][j];
+                if (annotation instanceof TargetParam
                         && !params[i].getName().equals("java.util.Map")
                         && !params[i].getName().equals("java.util.List")
                         && !params[i].getName().equals("java.util.Set")) {
@@ -173,12 +169,13 @@ public class SimpleTransformer implements ClassFileTransformer {
         /** 返参处理 */
         StringBuilder statement = new StringBuilder();
         String returnClassName = ctMethod.getReturnType().getName();
-        Class returnClazz = ctClassMap.get(ctMethod.getReturnType().getName());
+        Class returnClazz = ctClassMap.get(returnClassName);
         if (returnClazz == null) {
             if (returnClassName.equals("java.util.Map")
                     || returnClassName.equals("java.util.Set")
                     || returnClassName.equals("java.util.List")) {
-                //TODO 待处理
+                //TODO 如果返回参数为Map,Set,List,暂不支持, 以后是否支持看情况.
+                throw new RuntimeException("Return Type not support【Map, List, Set】, method name is " + ctMethod.getName());
             }
 
             if ("void".equals(returnClassName)) {

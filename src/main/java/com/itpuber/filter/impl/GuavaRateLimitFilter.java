@@ -28,7 +28,7 @@ public class GuavaRateLimitFilter extends AbstractFilter {
 
     public RateLimiter getRateLimit(String resource, long maxCount) {
         RateLimiter limit = rateLimiterMap.get(resource);
-        if(limit == null) {
+        if (limit == null) {
             try {
                 lock.lock();
                 limit = rateLimiterMap.get(resource);
@@ -36,9 +36,7 @@ public class GuavaRateLimitFilter extends AbstractFilter {
                     limit = RateLimiter.create(maxCount);
                     rateLimiterMap.put(resource, limit);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
+            }  finally {
                 lock.unlock();
             }
         }

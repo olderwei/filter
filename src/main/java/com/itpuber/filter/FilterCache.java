@@ -4,6 +4,8 @@ import com.itpuber.domain.FilterRule;
 import com.itpuber.enums.Strategy;
 import com.itpuber.filter.impl.GuavaRateLimitFilter;
 import com.itpuber.filter.impl.GuavaUnitLimitFilter;
+import com.itpuber.filter.impl.PercentLimitFilter;
+import com.itpuber.filter.impl.RedisUnitLimitFilter;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,6 +43,14 @@ public class FilterCache {
                 GuavaRateLimitFilter guavaRateLimitFilter = new GuavaRateLimitFilter();
                 filterCache.put(filterKey, guavaRateLimitFilter);
                 return guavaRateLimitFilter;
+            } else if (filterRule.getStrategy().equals(Strategy.PERCENT_LIMIT)) {
+                PercentLimitFilter percentLimitFilter = new PercentLimitFilter();
+                filterCache.put(filterKey, percentLimitFilter);
+                return percentLimitFilter;
+            } else if (filterRule.getStrategy().equals(Strategy.REDIS)) {
+                RedisUnitLimitFilter redisUnitLimitFilter = new RedisUnitLimitFilter();
+                filterCache.put(filterKey, redisUnitLimitFilter);
+                return redisUnitLimitFilter;
             }
         } catch (Exception e) {
             e.printStackTrace();

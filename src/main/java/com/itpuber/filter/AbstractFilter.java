@@ -49,7 +49,8 @@ public abstract class AbstractFilter implements Filter {
             for (int i = 0; i < commonParamsList.size(); i++) {
                 Object objectValue = inputParams[Integer.parseInt(commonParamsList.get(i))];
                 if (objectValue != null) {
-                    stringBuilder.append("commonParam:" + objectValue + "#");
+                    //stringBuilder.append("commonParam:" + objectValue + "#");
+                    stringBuilder.append(objectValue);
                 }
             }
 

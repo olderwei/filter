@@ -9,6 +9,8 @@ public enum Strategy {
 
     GUAVA_RATE_LIMIT("com.itpuber.enums.Strategy.GUAVA_RATE_LIMIT"),
 
+    PERCENT_LIMIT("com.itpuber.enums.Strategy.PERCENT_LIMIT"),
+
     REDIS("com.itpuber.enums.Strategy.REDIS");
 
     private String value;
